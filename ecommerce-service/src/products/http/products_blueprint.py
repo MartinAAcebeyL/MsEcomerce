@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 from enviame.inputvalidation import validate_schema_flask, SUCCESS_CODE, FAIL_CODE
 from src.products.http.validation import product_validatable_fields
+from src.utils.utils import jwt_required
 
 # Endpoints para CRUD de PRODUCTS.
 
@@ -19,6 +20,7 @@ def create_products_blueprint(manage_products_usecase):
     blueprint = Blueprint("products", __name__)
 
     @blueprint.route("/products", methods=["GET"])
+    @jwt_required()
     def get_products():
         products = manage_products_usecase.get_products()
 
@@ -40,6 +42,7 @@ def create_products_blueprint(manage_products_usecase):
         return response, http_code
 
     @blueprint.route("/products/<string:product_id>", methods=["GET"])
+    @jwt_required()
     def get_product(product_id):
         product = manage_products_usecase.get_product(product_id)
 
@@ -65,6 +68,7 @@ def create_products_blueprint(manage_products_usecase):
         return response, http_code
 
     @blueprint.route("/products", methods=["POST"])
+    @jwt_required()
     @validate_schema_flask(product_validatable_fields.PRODUCT_CREATION_VALIDATABLE_FIELDS)
     def create_product():
         body = request.get_json()
@@ -93,6 +97,7 @@ def create_products_blueprint(manage_products_usecase):
         return response, http_code
 
     @blueprint.route("/products/<string:product_id>", methods=["PUT"])
+    @jwt_required()
     @validate_schema_flask(product_validatable_fields.PRODUCT_UPDATE_VALIDATABLE_FIELDS)
     def update_product(product_id):
         body = request.get_json()
@@ -120,6 +125,7 @@ def create_products_blueprint(manage_products_usecase):
         return response, http_code
 
     @blueprint.route("/products/<string:product_id>", methods=["DELETE"])
+    @jwt_required()
     def delete_product(product_id):
         try:
             manage_products_usecase.delete_product(product_id)

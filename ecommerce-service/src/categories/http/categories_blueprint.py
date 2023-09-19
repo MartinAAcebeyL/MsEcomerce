@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 from enviame.inputvalidation import validate_schema_flask, SUCCESS_CODE, FAIL_CODE
 from src.categories.http.validation import category_validatable_fields
-
+from src.utils.utils import jwt_required
 # Endpoints para CRUD de Categories.
 
 # Sólo se encarga de recibir las llamadas HTTP y le entrega los datos
@@ -9,15 +9,17 @@ from src.categories.http.validation import category_validatable_fields
 # contener lógica de negocio, sólo lo necesario para recibir y entregar
 # respuestas válidas al mundo exterior.
 
-# Se realiza la validación de datos de entrada mediante el decorador 
+# Se realiza la validación de datos de entrada mediante el decorador
 # "@validate_schema_flask", el cual recibe como argumento un diccionario definido
 # en el archivo "category_validatable_fields". No sólo valida que todos los campos
 # requeridos vengan en el payload, sino que también que no vengan campos de más.
 
+
 def create_categories_blueprint(manage_categories_usecase):
     blueprint = Blueprint("categories", __name__)
 
-    @blueprint.route("/categories", methods = ["GET"])
+    @blueprint.route("/categories", methods=["GET"])
+    @jwt_required()
     def get_categories():
         categories = manage_categories_usecase.get_categories()
 
@@ -35,10 +37,11 @@ def create_categories_blueprint(manage_categories_usecase):
             "message": message,
             "data": data,
         }
-        
+
         return response, http_code
 
-    @blueprint.route("/categories/<string:category_id>", methods = ["GET"])
+    @blueprint.route("/categories/<string:category_id>", methods=["GET"])
+    @jwt_required()
     def get_category(category_id):
 
         category = manage_categories_usecase.get_category(category_id)
@@ -62,10 +65,11 @@ def create_categories_blueprint(manage_categories_usecase):
 
         if data:
             response["data"] = data
-        
+
         return response, http_code
 
-    @blueprint.route("/categories", methods = ["POST"])
+    @blueprint.route("/categories", methods=["POST"])
+    @jwt_required()
     @validate_schema_flask(category_validatable_fields.CATEGORY_CREATION_VALIDATABLE_FIELDS)
     def create_category():
         body = request.get_json()
@@ -92,14 +96,16 @@ def create_categories_blueprint(manage_categories_usecase):
 
         return response, http_code
 
-    @blueprint.route("/categories/<string:category_id>", methods = ["PUT"])
+    @blueprint.route("/categories/<string:category_id>", methods=["PUT"])
+    @jwt_required()
     @validate_schema_flask(category_validatable_fields.CATEGORY_UPDATE_VALIDATABLE_FIELDS)
     def update_category(category_id):
 
         body = request.get_json()
 
         try:
-            category = manage_categories_usecase.update_category(category_id, body)
+            category = manage_categories_usecase.update_category(
+                category_id, body)
             data = category.serialize()
             message = "Category updated succesfully"
             code = SUCCESS_CODE
@@ -121,7 +127,8 @@ def create_categories_blueprint(manage_categories_usecase):
 
         return response, http_code
 
-    @blueprint.route("/categories/<string:category_id>", methods = ["DELETE"])
+    @blueprint.route("/categories/<string:category_id>", methods=["DELETE"])
+    @jwt_required(roles=["admin"])
     def delete_category(category_id):
 
         try:
