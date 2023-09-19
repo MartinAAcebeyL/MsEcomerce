@@ -1,6 +1,8 @@
 from src.users.entities.user import User
 from src.utils import utils
 
+import jwt
+from datetime import datetime, timedelta
 # Casos de uso para el manejo de users.
 
 # Recibe en el constructor el repositorio a utilizar. Da igual si recibe el repositorio
@@ -10,6 +12,23 @@ from src.utils import utils
 class ManageUsersUsecase:
     def __init__(self, users_repository):
         self.users_repository = users_repository
+        self.secret_key = 'SECRET_KEY'
+
+    def login(self, data):
+        email = data.get('email')
+        password = data.get('password')
+
+        user = self.users_repository.get_user_by_email(email)
+        if user and user.password == password:
+            token_payload = {
+                'email': user.email,
+                'is_admin': user.is_admin,
+                'exp': datetime.utcnow() + timedelta(hours=5)
+            }
+            token = jwt.encode(
+                token_payload, self.secret_key, algorithm='HS256')
+            return token
+        return None
 
     def chance_role(self, id, role):
         self.users_repository.change_role_buyer(id, role)

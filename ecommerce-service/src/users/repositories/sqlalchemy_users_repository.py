@@ -36,6 +36,12 @@ class SQLAlchemyUsersRepository:
         sqlalchemy_client.mapper_registry.map_imperatively(
             User, self.users_table)
 
+    def get_user_by_email(self, email):
+        with self.session_factory() as session:
+            user = session.query(User).filter_by(
+                email=email, deleted_at=None).first()
+            return user
+
     def change_role(self, id: int, role: str, value: bool) -> None:
         with self.session_factory() as session:
             user = self.get_user(id)

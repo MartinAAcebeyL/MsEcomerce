@@ -1,7 +1,7 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from enviame.inputvalidation import validate_schema_flask, SUCCESS_CODE, FAIL_CODE
 from src.users.http.validation import user_validatable_fields
-
+from src.utils.utils import jwt_required
 
 # Endpoints para CRUD de User.
 
@@ -15,11 +15,23 @@ from src.users.http.validation import user_validatable_fields
 # en el archivo "user_validatable_fields". No sólo valida que todos los campos
 # requeridos vengan en el payload, sino que también que no vengan campos de más.
 
+
 def create_users_blueprint(manage_users_usecase):
 
     blueprint = Blueprint("users", __name__)
 
+    @blueprint.route("/users/login", methods=["POST"])
+    def login():
+        data = request.get_json()
+
+        token = manage_users_usecase.login(data)
+
+        if token:
+            return jsonify({'token': token}), 200
+        return jsonify({'message': 'Credenciales incorrectas'}), 401
+
     @blueprint.route("/users/buyers", methods=["GET"])
+    @jwt_required(roles=['admin'])
     def get_buyer_users():
         users = manage_users_usecase.get_users_by_role("buyer")
 
@@ -41,6 +53,7 @@ def create_users_blueprint(manage_users_usecase):
         return response, http_code
 
     @blueprint.route("/users/sellers", methods=["GET"])
+    @jwt_required(roles=['admin'])
     def get_seller_users():
         users = manage_users_usecase.get_users_by_role("seller")
         users_dict = []
@@ -52,7 +65,6 @@ def create_users_blueprint(manage_users_usecase):
         message = "Seller users obtained succesfully"
         http_code = 200
 
-
         response = {
             "code": code,
             "message": message,
@@ -62,6 +74,7 @@ def create_users_blueprint(manage_users_usecase):
         return response, http_code
 
     @blueprint.route("/users", methods=["GET"])
+    @jwt_required(roles=['admin'])
     def get_users():
 
         users = manage_users_usecase.get_users()
@@ -84,6 +97,7 @@ def create_users_blueprint(manage_users_usecase):
         return response, http_code
 
     @blueprint.route("/users/<string:user_id>", methods=["GET"])
+    @jwt_required()
     def get_user(user_id):
         user = manage_users_usecase.get_user(user_id)
 
@@ -138,6 +152,7 @@ def create_users_blueprint(manage_users_usecase):
         return response, http_code
 
     @blueprint.route("/users/<string:user_id>", methods=["PUT"])
+    @jwt_required()
     @validate_schema_flask(user_validatable_fields.USER_UPDATE_VALIDATABLE_FIELDS)
     def update_user(user_id):
 
@@ -167,6 +182,7 @@ def create_users_blueprint(manage_users_usecase):
         return response, http_code
 
     @blueprint.route("/users/<string:user_id>", methods=["DELETE"])
+    @jwt_required()
     def delete_user(user_id):
 
         try:
