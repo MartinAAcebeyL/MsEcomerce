@@ -1,6 +1,8 @@
 from flask import Blueprint, request
 from enviame.inputvalidation import validate_schema_flask, SUCCESS_CODE, FAIL_CODE
 from src.transactions.http.validation import transaction_validatable_fields
+from src.utils.utils import jwt_required
+
 # Endpoints para CRUD de TRANSACTION.
 
 # Sólo se encarga de recibir las llamadas HTTP y le entrega los datos
@@ -18,6 +20,7 @@ def create_transactions_blueprint(manage_transactions_usecase):
     blueprint = Blueprint("transactions", __name__)
 
     @blueprint.route("/transactions", methods=["GET"])
+    @jwt_required(roles=['admin'])
     def get_transactions():
         transactions = manage_transactions_usecase.get_transactions()
 
@@ -38,9 +41,10 @@ def create_transactions_blueprint(manage_transactions_usecase):
 
         return response, http_code
 
-    @blueprint.route("/transacions/<string:transacion_id>", methods=["GET"])
-    def get_transacion(transacion_id):
-        transacion = manage_transactions_usecase.get_transacion(transacion_id)
+    @blueprint.route("/transactions/<string:transacion_id>", methods=["GET"])
+    @jwt_required(roles=['admin'])
+    def get_transaction(transacion_id):
+        transacion = manage_transactions_usecase.get_transaction(transacion_id)
 
         if transacion:
             data = transacion.serialize()
@@ -64,6 +68,7 @@ def create_transactions_blueprint(manage_transactions_usecase):
         return response, http_code
 
     @blueprint.route("/transactions", methods=["POST"])
+    @jwt_required()
     @validate_schema_flask(transaction_validatable_fields.TRANSACTION_CREATION_VALIDATABLE_FIELDS)
     def create_transaction():
         body = request.get_json()
@@ -93,6 +98,7 @@ def create_transactions_blueprint(manage_transactions_usecase):
         return response, http_code
 
     @blueprint.route("/transactions/<string:transaction_id>", methods=["PUT"])
+    @jwt_required()
     @validate_schema_flask(transaction_validatable_fields.TRANSACTION_UPDATE_VALIDATABLE_FIELDS)
     def update_transaction(transaction_id):
         body = request.get_json()
@@ -121,6 +127,7 @@ def create_transactions_blueprint(manage_transactions_usecase):
         return response, http_code
 
     @blueprint.route("/transactions/<string:transaction_id>", methods=["DELETE"])
+    @jwt_required()
     def delete_transaction(transaction_id):
         try:
             manage_transactions_usecase.delete_transaction(transaction_id)
