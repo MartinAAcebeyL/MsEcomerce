@@ -30,6 +30,8 @@ class User:
             "email": self.email,
             "password": self.password,
             "is_admin": self.is_admin,
+            "is_seller": self.is_seller,
+            "is_buyer": self.is_buyer,
 
             "created_at": self.created_at,
             "updated_at": self.updated_at,

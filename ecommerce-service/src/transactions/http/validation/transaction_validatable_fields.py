@@ -15,6 +15,10 @@ TRANSACTION_CREATION_VALIDATABLE_FIELDS = {
         "required": True,
         "type": "integer",
     },
+    "amount": {
+        "required": True,
+        "type": "integer",
+    },
 }
 
 TRANSACTION_UPDATE_VALIDATABLE_FIELDS = {
@@ -23,6 +27,10 @@ TRANSACTION_UPDATE_VALIDATABLE_FIELDS = {
         "type": "integer",
     },
     "products": {
+        "required": False,
+        "type": "integer",
+    },
+    "amount": {
         "required": False,
         "type": "integer",
     },

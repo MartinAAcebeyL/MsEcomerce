@@ -1,6 +1,7 @@
 from src.transactions.entities.transaction import Transaction
 from src.utils import utils
-
+from src.users import sqlalchemy_users_repository
+from src.products import sqlalchemy_products_repository
 # Casos de uso para el manejo de Transactions.
 
 # Recibe en el constructor el repositorio a utilizar. Da igual si recibe el repositorio de SQL o de Firestore, el caso de uso debe funcionar independientemente de su implementación.
@@ -27,10 +28,17 @@ class ManageTransactionsUsecase:
         data["updated_at"] = current_time
 
         transaction = Transaction.from_dict(data)
-        transaction = self.transactions_repository.create_transaction(
-            transaction)
+        if sqlalchemy_products_repository.register_sale(
+                transaction.amount, transaction.products):
+            transaction = self.transactions_repository.create_transaction(
+                transaction)
 
-        return transaction
+            if self.transactions_repository.count_registry_by_buyer_user(transaction.buyer_user) == 1:
+                sqlalchemy_users_repository.change_role(
+                    transaction.buyer_user, "buyer", True)
+
+            return transaction
+        return False
 
     def update_transaction(self, transaction_id, data):
 
@@ -59,9 +67,13 @@ class ManageTransactionsUsecase:
         transaction = self.get_transaction(transaction_id)
 
         if transaction:
+            sqlalchemy_products_repository.return_sale(
+                amount=transaction.amount, id=transaction.products)
+            
             data = {
                 "deleted_at": utils.get_current_datetime()
             }
+            
             transaction = self.transactions_repository.update_transaction(
                 transaction_id, data)
         else:

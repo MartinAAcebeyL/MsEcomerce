@@ -11,6 +11,9 @@ class ManageUsersUsecase:
     def __init__(self, users_repository):
         self.users_repository = users_repository
 
+    def chance_role(self, id, role):
+        self.users_repository.change_role_buyer(id, role)
+
     def get_users(self):
         # Retorna una lista de entidades User desde el repositorio.
         return self.users_repository.get_users()

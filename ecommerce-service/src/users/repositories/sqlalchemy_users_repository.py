@@ -36,6 +36,36 @@ class SQLAlchemyUsersRepository:
         sqlalchemy_client.mapper_registry.map_imperatively(
             User, self.users_table)
 
+    def change_role(self, id: int, role: str, value: bool) -> None:
+        with self.session_factory() as session:
+            user = self.get_user(id)
+
+            if user:
+                if role == "buyer":
+                    session.query(User).filter_by(
+                        id=id, deleted_at=None).update({
+                            "is_buyer": value
+                        }
+                    )
+                else:
+                    session.query(User).filter_by(
+                        id=id, deleted_at=None).update({
+                            "is_seller": value
+                        }
+                    )
+                session.commit()
+
+    def get_users_by_role(self, role: str):
+        users = None
+        with self.session_factory() as session:
+            if role == 'buyer':
+                users = session.query(User).filter_by(
+                    is_buyer=True, deleted_at=None).all()
+            else:
+                users = session.query(User).filter_by(
+                    is_seller=True, deleted_at=None).all()
+        return users
+
     def get_users(self):
         with self.session_factory() as session:
             users = session.query(User).filter_by(deleted_at=None).all()

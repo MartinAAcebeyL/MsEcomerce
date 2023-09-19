@@ -26,7 +26,6 @@ class SQLAlchemyCategoriesRepository():
             Column("id", Integer, primary_key = True),
             Column("name", String(150)),
             Column("description", String(150)),
-            
             Column("products", Integer),
 
             Column("created_at", TIMESTAMP),

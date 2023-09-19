@@ -1,6 +1,6 @@
 from src.products.entities.product import Product
 from src.utils import utils
-
+from src.users import sqlalchemy_users_repository
 # Casos de uso para el manejo de Products.
 
 # Recibe en el constructor el repositorio a utilizar. Da igual si recibe el repositorio de SQL o de Firestore, el caso de uso debe funcionar independientemente de su implementación.
@@ -28,7 +28,9 @@ class ManageProductsUsecase:
 
         product = Product.from_dict(data)
         product = self.products_repository.create_product(product)
-
+        if self.products_repository.count_registry_by_seller_user(product.seller_user) == 1:
+            sqlalchemy_users_repository.change_role(
+                product.seller_user, "seller", True)
         return product
 
     def update_product(self, product_id, data):

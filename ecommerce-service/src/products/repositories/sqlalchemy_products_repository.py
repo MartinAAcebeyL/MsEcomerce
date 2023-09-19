@@ -1,8 +1,8 @@
 from src.products.entities.product import Product
 from src.categories.entities.category import Category
+
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import declarative_base, relationship
-
 # Implementación con SQL Alchemy para el repositorio de Products.
 
 
@@ -28,7 +28,7 @@ class SQLAlchemyProductsRepository():
             Column("name", String(150)),
             Column("description", String(150)),
             Column("quantity", Integer),
-            Column("status", String(150)),
+            Column("status", String(150), default="activo"),
             Column("seller_user", Integer, ForeignKey("Users.id")),
             Column("transactions", Integer),
             Column("categories", Integer),
@@ -40,10 +40,52 @@ class SQLAlchemyProductsRepository():
 
         sqlalchemy_client.mapper_registry.map_imperatively(
             Product, self.products_table)
+
         Product.seller_user = relationship(
             "User", back_populates="seller_user")
         Product.categories = relationship(
             "Category", back_populates="products", secondary="product_category_association")
+
+    def register_sale(self, amount, product_id) -> bool:
+        product = self.get_product(product_id)
+        if amount > product.quantity:
+            return False
+
+        product.quantity -= amount
+        if product.quantity == 0:
+            product.status = "inactivo"
+
+        with self.session_factory() as session:
+            session.query(Product).filter_by(
+                id=product_id, deleted_at=None).update({
+                    "quantity": product.quantity,
+                    "status": product.status
+                })
+            session.commit()
+        return True
+
+    def return_sale(self, amount, id):
+        product = self.get_product(id)
+
+        product.quantity += amount
+        if product.status != "activo":
+            product.status = "activo"
+
+        with self.session_factory() as session:
+            session.query(Product).filter_by(
+                id=id, deleted_at=None).update({
+                    "quantity": product.quantity,
+                    "status": product.status
+                }
+            )
+            session.commit()
+
+    def count_registry_by_seller_user(self, seller_user_id):
+        with self.session_factory() as session:
+            sql_query = f"SELECT COUNT(id) FROM Products WHERE seller_user = {seller_user_id};"
+            result = session.execute(sql_query)
+            count = result.scalar()
+            return count
 
     def get_products(self):
         with self.session_factory() as session:

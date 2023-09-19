@@ -28,6 +28,8 @@ class SQLAlchemyTransactionsRepository():
             Column("id", Integer, primary_key=True),
             Column("buyer_user", Integer, ForeignKey("Users.id")),
             Column("products", Integer),
+            Column("amount", Integer),
+
 
             Column("created_at", TIMESTAMP),
             Column("updated_at", TIMESTAMP),
@@ -36,10 +38,18 @@ class SQLAlchemyTransactionsRepository():
 
         sqlalchemy_client.mapper_registry.map_imperatively(
             Transaction, self.products_table)
+
         Transaction.buyer_user = relationship(
             "User", back_populates="buyer_user")
         Transaction.products = relationship(
             "Products", back_populates="products", secondary="transaction_product_association")
+
+    def count_registry_by_buyer_user(self, id):
+        with self.session_factory() as session:
+            sql_query = f"SELECT COUNT(id) FROM Transactions WHERE buyer_user = {id};"
+            result = session.execute(sql_query)
+            count = result.scalar()
+            return count
 
     def get_transactions(self):
         with self.session_factory() as session:

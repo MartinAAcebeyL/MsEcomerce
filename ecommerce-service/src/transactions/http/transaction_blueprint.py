@@ -70,11 +70,14 @@ def create_transactions_blueprint(manage_transactions_usecase):
 
         try:
             transaction = manage_transactions_usecase.create_transaction(body)
+            if not transaction:
+                raise Exception(
+                    "You cannot create a transaction with a quantity greater than stock")
             data = transaction.serialize()
             code = SUCCESS_CODE
             message = "Transaction created succesfully"
             http_code = 201
-        except ValueError as e:
+        except Exception as e:
             data = None
             code = FAIL_CODE
             message = str(e)

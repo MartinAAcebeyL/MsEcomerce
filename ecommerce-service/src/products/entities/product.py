@@ -76,4 +76,4 @@ class Product():
         updated_at = dict.get("updated_at")
         deleted_at = dict.get("deleted_at")
 
-        return Product(id, name, description, quantity, status, seller_user, transactions, categories, created_at, updated_at, deleted_at)
+        return Product(id, name, description, quantity, status, seller_user, categories, transactions, created_at, updated_at, deleted_at)
