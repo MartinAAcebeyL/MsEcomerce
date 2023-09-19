@@ -10,7 +10,7 @@ from src.users.http.validation import user_validatable_fields
 # contener lógica de negocio, sólo lo necesario para recibir y entregar
 # respuestas válidas al mundo exterior.
 
-# Se realiza la validación de datos de entrada mediante el decorador 
+# Se realiza la validación de datos de entrada mediante el decorador
 # "@validate_schema_flask", el cual recibe como argumento un diccionario definido
 # en el archivo "user_validatable_fields". No sólo valida que todos los campos
 # requeridos vengan en el payload, sino que también que no vengan campos de más.
@@ -19,7 +19,49 @@ def create_users_blueprint(manage_users_usecase):
 
     blueprint = Blueprint("users", __name__)
 
-    @blueprint.route("/users", methods = ["GET"])
+    @blueprint.route("/users/buyers", methods=["GET"])
+    def get_buyer_users():
+        users = manage_users_usecase.get_users_by_role("buyer")
+
+        users_dict = []
+        for user in users:
+            users_dict.append(user.serialize())
+
+        data = users_dict
+        code = SUCCESS_CODE
+        message = "Buyer users obtained succesfully"
+        http_code = 200
+
+        response = {
+            "code": code,
+            "message": message,
+            "data": data,
+        }
+
+        return response, http_code
+
+    @blueprint.route("/users/sellers", methods=["GET"])
+    def get_seller_users():
+        users = manage_users_usecase.get_users_by_role("seller")
+        users_dict = []
+        for user in users:
+            users_dict.append(user.serialize())
+
+        data = users_dict
+        code = SUCCESS_CODE
+        message = "Seller users obtained succesfully"
+        http_code = 200
+
+
+        response = {
+            "code": code,
+            "message": message,
+            "data": data,
+        }
+
+        return response, http_code
+
+    @blueprint.route("/users", methods=["GET"])
     def get_users():
 
         users = manage_users_usecase.get_users()
@@ -38,10 +80,10 @@ def create_users_blueprint(manage_users_usecase):
             "message": message,
             "data": data,
         }
-        
+
         return response, http_code
 
-    @blueprint.route("/users/<string:user_id>", methods = ["GET"])
+    @blueprint.route("/users/<string:user_id>", methods=["GET"])
     def get_user(user_id):
         user = manage_users_usecase.get_user(user_id)
 
@@ -64,10 +106,10 @@ def create_users_blueprint(manage_users_usecase):
 
         if data:
             response["data"] = data
-        
+
         return response, http_code
 
-    @blueprint.route("/users", methods = ["POST"])
+    @blueprint.route("/users", methods=["POST"])
     @validate_schema_flask(user_validatable_fields.USER_CREATION_VALIDATABLE_FIELDS)
     def create_user():
         body = request.get_json()
@@ -95,7 +137,7 @@ def create_users_blueprint(manage_users_usecase):
 
         return response, http_code
 
-    @blueprint.route("/users/<string:user_id>", methods = ["PUT"])
+    @blueprint.route("/users/<string:user_id>", methods=["PUT"])
     @validate_schema_flask(user_validatable_fields.USER_UPDATE_VALIDATABLE_FIELDS)
     def update_user(user_id):
 
@@ -124,7 +166,7 @@ def create_users_blueprint(manage_users_usecase):
 
         return response, http_code
 
-    @blueprint.route("/users/<string:user_id>", methods = ["DELETE"])
+    @blueprint.route("/users/<string:user_id>", methods=["DELETE"])
     def delete_user(user_id):
 
         try:
