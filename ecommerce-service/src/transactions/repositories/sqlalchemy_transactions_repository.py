@@ -44,6 +44,14 @@ class SQLAlchemyTransactionsRepository():
         Transaction.products = relationship(
             "Products", back_populates="products", secondary="transaction_product_association")
 
+    def get_transactions_by_user_type(self, user_type):
+        is_admin = True if user_type == 'admin' else False
+
+        with self.session_factory() as session:
+            result = session.query(Transaction).join(
+                User).filter(User.is_admin == is_admin).all()
+            return result
+
     def count_registry_by_buyer_user(self, id):
         with self.session_factory() as session:
             sql_query = f"SELECT COUNT(id) FROM Transactions WHERE buyer_user = {id};"

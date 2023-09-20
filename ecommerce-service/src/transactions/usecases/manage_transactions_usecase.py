@@ -11,6 +11,9 @@ class ManageTransactionsUsecase:
     def __init__(self, transactions_repository):
         self.transactions_repository = transactions_repository
 
+    def get_transactions_by_user_type(self, user_type):
+        return self.transactions_repository.get_transactions_by_user_type(user_type)
+
     def get_transactions(self):
         # Retorna una lista de entidades Transaction desde el repositorio.
         return self.transactions_repository.get_transactions()
@@ -69,11 +72,11 @@ class ManageTransactionsUsecase:
         if transaction:
             sqlalchemy_products_repository.return_sale(
                 amount=transaction.amount, id=transaction.products)
-            
+
             data = {
                 "deleted_at": utils.get_current_datetime()
             }
-            
+
             transaction = self.transactions_repository.update_transaction(
                 transaction_id, data)
         else:

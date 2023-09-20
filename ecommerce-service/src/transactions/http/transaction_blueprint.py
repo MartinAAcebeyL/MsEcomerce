@@ -16,19 +16,60 @@ from src.utils.utils import jwt_required
 # requeridos vengan en el payload, sino que también que no vengan campos de más.
 
 
+def get_list_data(data) -> list:
+    transactions_dict = []
+    for transaction in data:
+        transactions_dict.append(transaction.serialize())
+    return transactions_dict
+
+
 def create_transactions_blueprint(manage_transactions_usecase):
     blueprint = Blueprint("transactions", __name__)
+
+    @blueprint.route("/transactions/list/admin", methods=["GET"])
+    @jwt_required(roles=['admin'])
+    def get_transactions_by_user_type_admin():
+        transactions = manage_transactions_usecase.get_transactions_by_user_type(
+            'admin')
+
+        data = get_list_data(transactions)
+        code = SUCCESS_CODE
+        message = "Admin transaction obtained succesfully"
+        http_code = 200
+
+        response = {
+            "code": code,
+            "message": message,
+            "data": data,
+        }
+
+        return response, http_code
+
+    @blueprint.route("/transactions/list/normal", methods=["GET"])
+    @jwt_required(roles=['admin'])
+    def get_transactions_by_user_type_normal():
+        transactions = manage_transactions_usecase.get_transactions_by_user_type(
+            'normal')
+
+        data = get_list_data(transactions)
+        code = SUCCESS_CODE
+        message = "Normal transaction obtained succesfully"
+        http_code = 200
+
+        response = {
+            "code": code,
+            "message": message,
+            "data": data,
+        }
+
+        return response, http_code
 
     @blueprint.route("/transactions", methods=["GET"])
     @jwt_required(roles=['admin'])
     def get_transactions():
         transactions = manage_transactions_usecase.get_transactions()
 
-        transactions_dict = []
-        for product in transactions:
-            transactions_dict.append(product.serialize())
-
-        data = transactions_dict
+        data = get_list_data(transactions)
         code = SUCCESS_CODE
         message = "Transaction obtained succesfully"
         http_code = 200
