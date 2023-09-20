@@ -17,7 +17,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSIsImlzX2FkbWluIjp0cnVlLCJleHAiOjE2OTUxNzU1MTR9.-77TXCz0BViG_e_feDdTMijjS9xO2IltVPC8Xto9__c",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSIsImlzX2FkbWluIjp0cnVlLCJleHAiOjE2OTUyMzk0NjR9.qICmuBwhImdlW9TSwCSAf0unwpRm3N089f1mQK3u8v8",
 									"type": "string"
 								}
 							]
@@ -76,7 +76,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSIsImlzX2FkbWluIjp0cnVlLCJleHAiOjE2OTUxNzU1MTR9.-77TXCz0BViG_e_feDdTMijjS9xO2IltVPC8Xto9__c",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSIsImlzX2FkbWluIjp0cnVlLCJleHAiOjE2OTUyMzk0NjR9.qICmuBwhImdlW9TSwCSAf0unwpRm3N089f1mQK3u8v8",
 									"type": "string"
 								}
 							]
@@ -85,7 +85,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"buyer_user\":1,\n    \"products\":1,\n    \"amount\":10\n}",
+							"raw": "{\n    \"buyer_user\":2,\n    \"products\":1,\n    \"amount\":10\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -176,6 +176,68 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Listar transacciones de admins",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSIsImlzX2FkbWluIjp0cnVlLCJleHAiOjE2OTUyMzk0NjR9.qICmuBwhImdlW9TSwCSAf0unwpRm3N089f1mQK3u8v8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/transactions/list/admin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"transactions",
+						"list",
+						"admin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listar transacciones de usuarios no admin",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSIsImlzX2FkbWluIjp0cnVlLCJleHAiOjE2OTUyMzk0NjR9.qICmuBwhImdlW9TSwCSAf0unwpRm3N089f1mQK3u8v8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/transactions/list/normal",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"transactions",
+						"list",
+						"normal"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"variable": [

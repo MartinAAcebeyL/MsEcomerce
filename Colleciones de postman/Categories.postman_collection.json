@@ -125,6 +125,37 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "listar categorias por id de un buyer_user",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSIsImlzX2FkbWluIjp0cnVlLCJleHAiOjE2OTUyMzk0NjR9.qICmuBwhImdlW9TSwCSAf0unwpRm3N089f1mQK3u8v8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/categories/user/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"categories",
+						"user",
+						"2"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"variable": [

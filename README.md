@@ -23,6 +23,8 @@ Una vez creado los contenedores y la base de datos con las tablas(quiza debe rei
 
 Se agrego las colecciones postman [aqui](./Colleciones%20de%20postman/)
 
+_Nota: todas los endpoints esta protegidas y te pediran un Token_
+
 De forma predeterminada, los microservicios se ejecutarán en los siguientes puertos:
 
 - ecommerce-service: 8000
