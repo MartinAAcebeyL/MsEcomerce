@@ -6,6 +6,7 @@ SQLAlchemy==1.4.22
 redis==3.5.3
 python-decouple==3.6
 pyjwt==2.8.0
+Faker==15.0.0
 
 # dev
 pytest==6.1.2

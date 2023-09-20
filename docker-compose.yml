@@ -15,13 +15,10 @@ services:
       - SQL_ALCHEMY_HOST=${ECOMMERCE_MYSQL_NAME}
       - SQL_ALCHEMY_DATABASE=${ECOMMERCE_MYSQL_DATABASE}
       - REDIS_HOST=${ECOMMERCE_REDIS_HOST}
-      # - FIRESTORE_EMULATOR_HOST=${ECOMMERCE_FIRESTORE_NAME}:8080
-      # - FIRESTORE_PROJECT_ID=${ECOMMERCE_FIRESTORE_NAME}
   
     volumes:
       - ${ECOMMERCE_SERVICE_PATH}/src:/app/src
       - ${ECOMMERCE_SERVICE_PATH}/tests:/app/tests
-      # - ${ECOMMERCE_SERVICE_PATH}/Docker/database/firestore-account:/app/firestore-account
       
     ports:
       - ${ECOMMERCE_APP_PORT}:8000
@@ -29,7 +26,6 @@ services:
     depends_on:
       - ecommerce-mysql
       - ecommerce-redis
-      # - ecommerce-firestore
   
   ecommerce-mysql:
     
@@ -52,12 +48,5 @@ services:
   
     container_name: ${ECOMMERCE_REDIS_HOST}
     image: redis:alpine
-  
-  # ecommerce-firestore:
-    
-  #   container_name: ${ECOMMERCE_FIRESTORE_NAME}
-  #   image: mtlynch/firestore-emulator
-    
-  #   environment:
-  #     FIRESTORE_PROJECT_ID: ${ECOMMERCE_FIRESTORE_NAME}
+
   
